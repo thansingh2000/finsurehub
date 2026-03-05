@@ -205,6 +205,172 @@
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     TRENDING CARS
+═══════════════════════════════════════════════════════════════ -->
+<section class="trending">
+  <div class="trending__container">
+
+    <!-- ── Section Header ── -->
+    <div class="trending__header">
+      <div class="trending__header-left">
+        <div class="trending__eyebrow">
+          <mat-icon>local_fire_department</mat-icon>
+          <span>Most Searched This Week</span>
+        </div>
+        <h2 class="trending__title">Trending Cars</h2>
+        <p class="trending__subtitle">
+          Hand-curated picks based on real buyer searches &amp; views
+        </p>
+      </div>
+      <a class="trending__view-all" routerLink="/buy-car">
+        View All Cars
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+
+    <!-- ── Filter Chips ── -->
+    <div class="trending__chips" role="group" aria-label="Filter cars by type">
+      @for (chip of trendingFilterChips; track chip.value) {
+        <button
+          class="trending__chip"
+          [class.trending__chip--active]="trendingFilter() === chip.value"
+          (click)="trendingFilter.set(chip.value)"
+        >
+          <mat-icon>{{ chip.icon }}</mat-icon>
+          {{ chip.label }}
+          @if (trendingFilter() === chip.value) {
+            <span class="trending__chip-count">
+              {{ filteredTrendingCars.length }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- ── Cards Grid ── -->
+    <div class="trending__grid">
+      @for (car of filteredTrendingCars; track car.id) {
+        <article class="tcar" [routerLink]="['/car-details', car.id]">
+
+          <!-- ─ Image zone ─ -->
+          <div class="tcar__img-wrap">
+            <img
+              [src]="car.image"
+              [alt]="car.brand + ' ' + car.model"
+              class="tcar__img"
+              loading="lazy"
+            />
+
+            <!-- gradient overlay for bottom readability -->
+            <div class="tcar__img-overlay"></div>
+
+            <!-- Top-left: badge -->
+            <span class="tcar__badge tcar__badge--{{ car.badge.toLowerCase().replace(' ', '-') }}">
+              @switch (car.badge) {
+                @case ('Trending')    { <mat-icon>local_fire_department</mat-icon> }
+                @case ('New')         { <mat-icon>new_releases</mat-icon>           }
+                @case ('Hot Deal')    { <mat-icon>bolt</mat-icon>                   }
+                @case ('Top Rated')   { <mat-icon>star</mat-icon>                   }
+                @case ('Best Seller') { <mat-icon>emoji_events</mat-icon>           }
+              }
+              {{ car.badge }}
+            </span>
+
+            <!-- Top-right: wishlist -->
+            <button
+              class="tcar__wish"
+              [class.tcar__wish--active]="isTrendingWished(car.id)"
+              (click)="toggleTrendingWish($event, car.id)"
+              [matTooltip]="isTrendingWished(car.id) ? 'Remove from wishlist' : 'Add to wishlist'"
+              aria-label="Toggle wishlist"
+            >
+              <mat-icon>
+                {{ isTrendingWished(car.id) ? 'favorite' : 'favorite_border' }}
+              </mat-icon>
+            </button>
+
+            <!-- Bottom-left: rating pill -->
+            <div class="tcar__rating">
+              <mat-icon>star</mat-icon>
+              <span>{{ car.rating }}</span>
+            </div>
+          </div>
+
+          <!-- ─ Card body ─ -->
+          <div class="tcar__body">
+
+            <!-- Year + location row -->
+            <div class="tcar__meta">
+              <span class="tcar__year">{{ car.year }}</span>
+              <span class="tcar__location">
+                <mat-icon>location_on</mat-icon>
+                {{ car.location }}
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="tcar__title">{{ car.brand }} {{ car.model }}</h3>
+
+            <!-- Price -->
+            <p class="tcar__price">
+              ₹{{ formatTrendingPrice(car.price) }}
+              @if (car.isNew) {
+                <span class="tcar__price-tag">New</span>
+              }
+            </p>
+
+            <!-- Spec pills -->
+            <div class="tcar__specs">
+              <span class="tcar__spec tcar__spec--fuel">
+                <mat-icon>local_gas_station</mat-icon>
+                {{ car.fuelType }}
+              </span>
+              <span class="tcar__spec tcar__spec--trx">
+                <mat-icon>settings</mat-icon>
+                {{ car.transmission }}
+              </span>
+              <span class="tcar__spec tcar__spec--km">
+                <mat-icon>speed</mat-icon>
+                {{ car.kmDriven.toLocaleString() }} km
+              </span>
+            </div>
+
+            <!-- CTA row -->
+            <div class="tcar__cta-row">
+              <span class="tcar__cta-btn">
+                View Details
+                <mat-icon>arrow_forward</mat-icon>
+              </span>
+              <button
+                class="tcar__compare-btn"
+                (click)="$event.stopPropagation()"
+                [routerLink]="['/compare']"
+                [queryParams]="{car: car.id}"
+                matTooltip="Compare"
+              >
+                <mat-icon>compare</mat-icon>
+              </button>
+            </div>
+
+          </div><!-- /tcar__body -->
+
+        </article>
+      }
+    </div><!-- /trending__grid -->
+
+    <!-- Empty state -->
+    @if (filteredTrendingCars.length === 0) {
+      <div class="trending__empty">
+        <mat-icon>search_off</mat-icon>
+        <p>No cars found for this filter.</p>
+        <button mat-stroked-button (click)="trendingFilter.set('all')">Clear Filter</button>
+      </div>
+    }
+
+  </div>
+</section>
+
 <!-- Why Choose Us -->
 <section class="py-16 bg-gray-50 dark:bg-gray-800">
   <div class="container mx-auto px-4">

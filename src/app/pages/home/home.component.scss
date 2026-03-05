@@ -773,3 +773,597 @@
   padding: 0 1.75rem !important;
   height: 2.75rem;
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  TRENDING CARS SECTION
+// ═════════════════════════════════════════════════════════════════════════════
+
+.trending {
+  padding: 5rem 0 6rem;
+  background: #ffffff;
+
+  :host-context(.dark) & {
+    background: #0f172a;
+  }
+}
+
+.trending__container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.trending__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.trending__header-left {
+  flex: 1;
+}
+
+.trending__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 2rem;
+  padding: 0.3rem 0.875rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #ea580c;
+  margin-bottom: 1rem;
+
+  mat-icon {
+    font-size: 0.85rem !important;
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+    color: #ef4444;
+  }
+
+  :host-context(.dark) & {
+    background: rgba(234, 88, 12, 0.1);
+    border-color: rgba(234, 88, 12, 0.3);
+    color: #fb923c;
+  }
+}
+
+.trending__title {
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+
+  :host-context(.dark) & {
+    color: #f8fafc;
+  }
+}
+
+.trending__subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 420px;
+
+  :host-context(.dark) & {
+    color: #94a3b8;
+  }
+}
+
+.trending__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ef4444;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: gap 0.2s ease;
+
+  mat-icon {
+    font-size: 1rem !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    gap: 0.5rem;
+
+    mat-icon { transform: translateX(3px); }
+  }
+}
+
+// ── Filter Chips ──────────────────────────────────────────────────────────────
+.trending__chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.625rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2.5rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.trending__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 2rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 0.9rem !important;
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+  }
+
+  :host-context(.dark) & {
+    background: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+  }
+
+  &:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #ef4444;
+  }
+
+  &--active {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+
+    &:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+    }
+  }
+}
+
+.trending__chip-count {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 1rem;
+  padding: 0 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 1.25rem;
+  text-align: center;
+}
+
+// ── Grid ─────────────────────────────────────────────────────────────────────
+.trending__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); gap: 1.75rem; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.trending__empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #94a3b8;
+
+  mat-icon {
+    font-size: 3rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  p { margin-bottom: 1rem; font-size: 1rem; }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+//  CAR CARD  (.tcar)
+// ═════════════════════════════════════════════════════════════════════════════
+
+.tcar {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition:
+    transform    0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow   0.28s ease,
+    border-color 0.2s ease;
+  text-decoration: none;
+
+  :host-context(.dark) & {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  // ── Hover ──────────────────────────────────────────────────────────────────
+  &:hover {
+    transform: translateY(-8px);
+    border-color: transparent;
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.12),
+      0  8px 16px rgba(0, 0, 0, 0.07);
+
+    .tcar__img     { transform: scale(1.07); }
+    .tcar__cta-btn { gap: 0.625rem; color: #ef4444; }
+    .tcar__cta-btn mat-icon { transform: translateX(3px); }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 3px;
+  }
+}
+
+// ── Image zone ────────────────────────────────────────────────────────────────
+.tcar__img-wrap {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.tcar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+  display: block;
+}
+
+// subtle bottom vignette so text overlays read cleanly
+.tcar__img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.0) 50%,
+    rgba(0,0,0,0.45) 100%
+  );
+  pointer-events: none;
+}
+
+// ── Badge (top-left) ──────────────────────────────────────────────────────────
+.tcar__badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+
+  mat-icon {
+    font-size: 0.75rem !important;
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+
+  // colour variants keyed off the badge name
+  &--trending    { background: rgba(239,  68,  68, 0.9); color: #fff; }
+  &--new         { background: rgba( 34, 197,  94, 0.9); color: #fff; }
+  &--hot-deal    { background: rgba(245, 158,  11, 0.9); color: #fff; }
+  &--top-rated   { background: rgba( 99, 102, 241, 0.9); color: #fff; }
+  &--best-seller { background: rgba( 14, 165, 233, 0.9); color: #fff; }
+}
+
+// ── Wishlist button (top-right) ───────────────────────────────────────────────
+.tcar__wish {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  mat-icon {
+    font-size: 1.1rem !important;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+    color: #9ca3af;
+    transition: color 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &:hover mat-icon {
+    color: #ef4444;
+    transform: scale(1.2);
+  }
+
+  &--active {
+    background: #fef2f2;
+
+    mat-icon {
+      color: #ef4444;
+      animation: heartPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+  }
+}
+
+@keyframes heartPop {
+  0%   { transform: scale(0.6); }
+  70%  { transform: scale(1.3); }
+  100% { transform: scale(1);   }
+}
+
+// ── Rating pill (bottom-left on image) ───────────────────────────────────────
+.tcar__rating {
+  position: absolute;
+  bottom: 0.625rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 1rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  backdrop-filter: blur(6px);
+
+  mat-icon {
+    font-size: 0.8rem !important;
+    width: 0.8rem !important;
+    height: 0.8rem !important;
+    color: #fbbf24;
+  }
+}
+
+// ── Card body ─────────────────────────────────────────────────────────────────
+.tcar__body {
+  padding: 1.125rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.tcar__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tcar__year {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.15rem 0.625rem;
+  border-radius: 1rem;
+
+  :host-context(.dark) & {
+    background: #334155;
+    color: #94a3b8;
+  }
+}
+
+.tcar__location {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  color: #94a3b8;
+
+  mat-icon {
+    font-size: 0.75rem !important;
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+    color: #ef4444;
+  }
+}
+
+.tcar__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  :host-context(.dark) & {
+    color: #f1f5f9;
+  }
+}
+
+.tcar__price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tcar__price-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 0.15rem 0.5rem;
+  border-radius: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  align-self: center;
+}
+
+// ── Spec pills ────────────────────────────────────────────────────────────────
+.tcar__specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0.125rem 0;
+}
+
+.tcar__spec {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.275rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+
+  mat-icon {
+    font-size: 0.75rem !important;
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+
+  &--fuel {
+    background: #fff7ed;
+    color: #c2410c;
+    border-color: #fed7aa;
+
+    :host-context(.dark) & {
+      background: rgba(194, 65, 12, 0.12);
+      border-color: rgba(194, 65, 12, 0.25);
+      color: #fb923c;
+    }
+  }
+
+  &--trx {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+
+    :host-context(.dark) & {
+      background: rgba(21, 128, 61, 0.12);
+      border-color: rgba(21, 128, 61, 0.25);
+      color: #4ade80;
+    }
+  }
+
+  &--km {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+
+    :host-context(.dark) & {
+      background: rgba(29, 78, 216, 0.12);
+      border-color: rgba(29, 78, 216, 0.25);
+      color: #60a5fa;
+    }
+  }
+}
+
+// ── CTA row ───────────────────────────────────────────────────────────────────
+.tcar__cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.875rem;
+  border-top: 1px solid #f1f5f9;
+
+  :host-context(.dark) & {
+    border-top-color: #334155;
+  }
+}
+
+.tcar__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  transition: color 0.2s ease, gap 0.2s ease;
+
+  mat-icon {
+    font-size: 0.9rem !important;
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+    transition: transform 0.2s ease;
+  }
+
+  :host-context(.dark) & {
+    color: #cbd5e1;
+  }
+}
+
+.tcar__compare-btn {
+  width: 2rem;
+  height: 2rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 0.9rem !important;
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+    color: #64748b;
+  }
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    mat-icon { color: #2563eb; }
+  }
+
+  :host-context(.dark) & {
+    background: #334155;
+    border-color: #475569;
+    mat-icon { color: #94a3b8; }
+  }
+}
