@@ -1,0 +1,239 @@
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { CarCardComponent } from '../../components/car-card/car-card.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
+import { CarService } from '../../services/car.service';
+import { Car } from '../../models/car.model';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    CarCardComponent,
+    LoadingComponent
+  ],
+  template: `
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-slide-in-up">
+            Find Your Perfect Car
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 text-primary-100">
+            Explore thousands of verified used cars from trusted dealers
+          </p>
+
+          <!-- Search Bar -->
+          <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Select Brand</mat-label>
+                <mat-select [(ngModel)]="searchBrand">
+                  <mat-option value="">All Brands</mat-option>
+                  @for (brand of popularBrands; track brand) {
+                    <mat-option [value]="brand">{{ brand }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>Budget</mat-label>
+                <mat-select [(ngModel)]="searchBudget">
+                  <mat-option value="">Any Budget</mat-option>
+                  <mat-option value="0-500000">Under ₹5 Lakh</mat-option>
+                  <mat-option value="500000-1000000">₹5 - 10 Lakh</mat-option>
+                  <mat-option value="1000000-2000000">₹10 - 20 Lakh</mat-option>
+                  <mat-option value="2000000-5000000">₹20 - 50 Lakh</mat-option>
+                  <mat-option value="5000000-99999999">Above ₹50 Lakh</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button 
+                mat-raised-button 
+                color="primary" 
+                class="!h-14 !text-lg"
+                routerLink="/buy-car"
+                [queryParams]="{brand: searchBrand, budget: searchBudget}"
+              >
+                <mat-icon>search</mat-icon>
+                Search Cars
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="py-12 bg-gray-50 dark:bg-gray-800">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div class="animate-slide-in-up">
+            <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">5000+</div>
+            <div class="text-gray-600 dark:text-gray-300">Cars Available</div>
+          </div>
+          <div class="animate-slide-in-up">
+            <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">500+</div>
+            <div class="text-gray-600 dark:text-gray-300">Verified Dealers</div>
+          </div>
+          <div class="animate-slide-in-up">
+            <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">50+</div>
+            <div class="text-gray-600 dark:text-gray-300">Cities Covered</div>
+          </div>
+          <div class="animate-slide-in-up">
+            <div class="text-4xl font-bold text-primary-600 dark:text-primary-400 mb-2">98%</div>
+            <div class="text-gray-600 dark:text-gray-300">Happy Customers</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Cars -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Featured Cars
+          </h2>
+          <p class="text-gray-600 dark:text-gray-300 text-lg">
+            Handpicked premium vehicles for you
+          </p>
+        </div>
+
+        @if (loading()) {
+          <app-loading></app-loading>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            @for (car of featuredCars(); track car.id) {
+              <app-car-card [car]="car"></app-car-card>
+            }
+          </div>
+        }
+
+        <div class="text-center">
+          <button mat-raised-button color="primary" routerLink="/buy-car" class="!px-8 !py-3">
+            View All Cars
+            <mat-icon class="ml-2">arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Why Choose CarMarket?
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <mat-card class="text-center p-8">
+            <mat-icon class="!text-6xl !w-16 !h-16 text-primary-600 dark:text-primary-400 mx-auto mb-4">
+              verified
+            </mat-icon>
+            <h3 class="text-xl font-bold mb-3">Verified Dealers</h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              All dealers are verified and trusted for quality service
+            </p>
+          </mat-card>
+
+          <mat-card class="text-center p-8">
+            <mat-icon class="!text-6xl !w-16 !h-16 text-primary-600 dark:text-primary-400 mx-auto mb-4">
+              price_check
+            </mat-icon>
+            <h3 class="text-xl font-bold mb-3">Best Prices</h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              Competitive pricing with transparent deals
+            </p>
+          </mat-card>
+
+          <mat-card class="text-center p-8">
+            <mat-icon class="!text-6xl !w-16 !h-16 text-primary-600 dark:text-primary-400 mx-auto mb-4">
+              support_agent
+            </mat-icon>
+            <h3 class="text-xl font-bold mb-3">24/7 Support</h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              Round the clock customer support for your queries
+            </p>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Brands -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Popular Brands
+          </h2>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-6">
+          @for (brand of popularBrands.slice(0, 8); track brand) {
+            <button 
+              mat-stroked-button 
+              class="!px-8 !py-4 !text-lg"
+              routerLink="/buy-car"
+              [queryParams]="{brand: brand}"
+            >
+              {{ brand }}
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+  `,
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
+})
+export class HomeComponent implements OnInit {
+  private carService = inject(CarService);
+
+  featuredCars = signal<Car[]>([]);
+  loading = signal(true);
+  popularBrands: string[] = [];
+  searchBrand = '';
+  searchBudget = '';
+
+  ngOnInit(): void {
+    this.loadFeaturedCars();
+    this.popularBrands = this.carService.getPopularBrands();
+  }
+
+  loadFeaturedCars(): void {
+    this.loading.set(true);
+    this.carService.getFeaturedCars().subscribe({
+      next: (cars) => {
+        this.featuredCars.set(cars);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      }
+    });
+  }
+}

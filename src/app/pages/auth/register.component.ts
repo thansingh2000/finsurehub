@@ -1,0 +1,166 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule
+  ],
+  template: `
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-800 py-12 px-4">
+      <mat-card class="w-full max-w-md !p-8">
+        <div class="text-center mb-8">
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <mat-icon class="!text-5xl !w-12 !h-12 text-primary-600">directions_car</mat-icon>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h1>
+          <p class="text-gray-600 dark:text-gray-300">Join CarMarket today</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>First Name</mat-label>
+              <input 
+                matInput 
+                type="text"
+                [(ngModel)]="formData.firstName"
+                name="firstName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Last Name</mat-label>
+              <input 
+                matInput 
+                type="text"
+                [(ngModel)]="formData.lastName"
+                name="lastName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="w-full mb-4">
+            <mat-label>Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input 
+              matInput 
+              type="email"
+              [(ngModel)]="formData.email"
+              name="email"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full mb-4">
+            <mat-label>Phone</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input 
+              matInput 
+              type="tel"
+              [(ngModel)]="formData.phone"
+              name="phone"
+              required
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full mb-4">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'"
+              [(ngModel)]="formData.password"
+              name="password"
+              required
+            />
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="hidePassword = !hidePassword"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full mb-6">
+            <mat-label>Register As</mat-label>
+            <mat-select [(ngModel)]="formData.role" name="role" required>
+              <mat-option value="customer">Customer</mat-option>
+              <mat-option value="dealer">Dealer</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            class="w-full !py-3 !text-lg mb-4"
+            [disabled]="!registerForm.valid"
+          >
+            Create Account
+          </button>
+
+          <div class="text-center">
+            <span class="text-gray-600 dark:text-gray-300">Already have an account? </span>
+            <a routerLink="/login" class="text-primary-600 hover:text-primary-700 font-semibold">
+              Login
+            </a>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+  `,
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
+})
+export class RegisterComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  formData = {
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    role: 'customer' as 'customer' | 'dealer'
+  };
+
+  hidePassword = true;
+
+  onSubmit(): void {
+    this.authService.register(this.formData).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Registration failed:', error);
+      }
+    });
+  }
+}
