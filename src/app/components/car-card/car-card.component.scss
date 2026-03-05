@@ -1,4 +1,85 @@
+// ─── Host ─────────────────────────────────────────────────────────────────────
 :host {
   display: block;
   height: 100%;
+}
+
+// ─── Spec pill shared style ────────────────────────────────────────────────────
+// Applied via Tailwind in the template; this rule adds the shared layout properties
+// so you don't have to repeat them on every pill variant.
+.spec-pill {
+  @apply inline-flex items-center gap-1
+         text-[11px] font-semibold
+         px-2 py-0.5
+         rounded-lg border;
+}
+
+// ─── Wishlist button ───────────────────────────────────────────────────────────
+.wish-btn {
+  &--active {
+    @apply bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800;
+  }
+}
+
+// Heart-pop keyframe — plays when a car is added to wishlist
+@keyframes heartPop {
+  0%   { transform: scale(0.5); opacity: 0.6; }
+  55%  { transform: scale(1.4); }
+  80%  { transform: scale(0.92); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+.wish-btn--active mat-icon {
+  animation: heartPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+// ─── Compare checkbox ──────────────────────────────────────────────────────────
+.compare-box {
+  @apply bg-white/20 border-white/80;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.2s ease;
+
+  &--checked {
+    @apply bg-white border-white;
+    transform: scale(1.1);
+  }
+}
+
+// ─── Subtle entrance animation for each card ──────────────────────────────────
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+:host {
+  animation: cardFadeIn 0.4s ease both;
+}
+
+// ─── View-details button ripple shimmer on hover ───────────────────────────────
+.view-btn {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  &:hover::after {
+    transform: translateX(100%);
+  }
+}
+
+// ─── Compare label ────────────────────────────────────────────────────────────
+.compare-label {
+  // already controlled via Tailwind group-hover utilities in the template;
+  // SCSS is only needed for the custom checkbox element below.
 }

@@ -1,90 +1,294 @@
-<mat-card class="group hover:shadow-2xl transition-all duration-300 !rounded-xl overflow-hidden h-full flex flex-col">
-  <!-- Image Section -->
-  <div class="relative overflow-hidden h-48">
-    <img
-      [src]="car.images[0]"
-      [alt]="car.brand + ' ' + car.model"
-      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-    />
-    <div class="absolute top-3 left-3 flex gap-2">
-      @if (car.isFeatured) {
-        <mat-chip class="!bg-yellow-500 !text-white !text-xs !h-6">Featured</mat-chip>
+<!-- ════════════════════════════════════════════════════
+     CAR CARD
+     Works with [car]="carObject"  OR individual @Inputs
+════════════════════════════════════════════════════ -->
+<div
+  class="group relative flex flex-col bg-white dark:bg-slate-800
+         rounded-2xl border border-slate-100 dark:border-slate-700
+         overflow-hidden cursor-pointer h-full
+         shadow-[0_2px_8px_rgba(0,0,0,0.06)]
+         hover:shadow-[0_20px_48px_rgba(0,0,0,0.14)]
+         hover:-translate-y-2 hover:border-red-200 dark:hover:border-red-800
+         transition-all duration-300 ease-out"
+  [routerLink]="['/car-details', _id]"
+>
+
+  <!-- ══════════════════════════════════════════════════
+       IMAGE ZONE
+  ══════════════════════════════════════════════════ -->
+  <div class="relative overflow-hidden h-52 flex-shrink-0">
+
+    <!-- Car image -->
+    @if (!imgError()) {
+      <img
+        [src]="_image"
+        [alt]="_title"
+        class="w-full h-full object-cover
+               group-hover:scale-110
+               transition-transform duration-500 ease-out"
+        loading="lazy"
+        (error)="onImgError()"
+      />
+    } @else {
+      <!-- Fallback placeholder -->
+      <div class="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200
+                  dark:from-slate-700 dark:to-slate-800
+                  flex flex-col items-center justify-center gap-2">
+        <mat-icon class="!text-6xl text-slate-300 dark:text-slate-600">directions_car</mat-icon>
+        <span class="text-xs text-slate-400 font-medium">No image available</span>
+      </div>
+    }
+
+    <!-- Bottom vignette — improves overlay text readability -->
+    <div class="absolute inset-0 bg-gradient-to-t
+                from-black/60 via-black/10 to-transparent
+                pointer-events-none"></div>
+
+    <!-- ── TOP-LEFT: Status badges ─────────────────────────── -->
+    <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+      @if (_isFeatured) {
+        <span class="inline-flex items-center gap-1
+                     px-2.5 py-0.5 rounded-full
+                     text-[10px] font-bold uppercase tracking-wide
+                     bg-amber-500/95 text-white
+                     backdrop-blur-sm shadow-sm">
+          <mat-icon class="!text-[10px] !w-[10px] !h-[10px]">workspace_premium</mat-icon>
+          Featured
+        </span>
       }
-      @if (car.isNew) {
-        <mat-chip class="!bg-green-500 !text-white !text-xs !h-6">New</mat-chip>
+      @if (_isNew) {
+        <span class="inline-flex items-center gap-1
+                     px-2.5 py-0.5 rounded-full
+                     text-[10px] font-bold uppercase tracking-wide
+                     bg-emerald-500/95 text-white
+                     backdrop-blur-sm shadow-sm">
+          <mat-icon class="!text-[10px] !w-[10px] !h-[10px]">new_releases</mat-icon>
+          New
+        </span>
       }
     </div>
+
+    <!-- ── TOP-RIGHT: Wishlist button ──────────────────────── -->
     <button
-      mat-icon-button
-      class="!absolute top-2 right-2 !bg-white !bg-opacity-90 hover:!bg-opacity-100"
+      class="wish-btn
+             absolute top-2.5 right-2.5
+             w-9 h-9 rounded-full
+             flex items-center justify-center
+             bg-white/90 dark:bg-slate-900/90
+             backdrop-blur-sm
+             border border-white/60 dark:border-slate-700
+             shadow-md
+             transition-all duration-200
+             hover:scale-110 hover:shadow-lg
+             focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+      [class.wish-btn--active]="wishlisted()"
       (click)="toggleWishlist($event)"
+      [matTooltip]="wishlisted() ? 'Remove from wishlist' : 'Save to wishlist'"
+      aria-label="Toggle wishlist"
     >
-      <mat-icon [class.text-red-500]="isInWishlist()">
-        {{ isInWishlist() ? 'favorite' : 'favorite_border' }}
+      <mat-icon
+        class="!text-xl !w-5 !h-5 transition-colors duration-200"
+        [class.text-red-500]="wishlisted()"
+        [class.text-slate-400]="!wishlisted()"
+      >
+        {{ wishlisted() ? 'favorite' : 'favorite_border' }}
       </mat-icon>
     </button>
-  </div>
 
-  <mat-card-content class="flex-1 flex flex-col p-4">
-    <!-- Year Badge -->
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-sm text-gray-500 dark:text-gray-400">{{ car.year }}</span>
-      @if (car.rating) {
-        <div class="flex items-center space-x-1">
-          <mat-icon class="!text-lg text-yellow-500">star</mat-icon>
-          <span class="text-sm font-medium">{{ car.rating }}</span>
-        </div>
+    <!-- ── BOTTOM-LEFT: Compare checkbox (appears on hover) ── -->
+    <label
+      class="compare-label
+             absolute bottom-3 left-3
+             flex items-center gap-1.5
+             cursor-pointer select-none
+             opacity-0 translate-y-1
+             group-hover:opacity-100 group-hover:translate-y-0
+             transition-all duration-200"
+      (click)="$event.stopPropagation()"
+    >
+      <span
+        class="compare-box
+               w-4 h-4 rounded flex items-center justify-center
+               border-2 bg-white/20 border-white
+               transition-all duration-200"
+        [class.compare-box--checked]="compareChecked()"
+        (click)="onCompareChange($event)"
+      >
+        @if (compareChecked()) {
+          <mat-icon class="!text-[10px] !w-[10px] !h-[10px] text-red-500">check</mat-icon>
+        }
+      </span>
+      <span class="text-white text-[11px] font-semibold drop-shadow-md">Compare</span>
+    </label>
+
+    <!-- ── BOTTOM-RIGHT: Rating pill ───────────────────────── -->
+    @if (_rating) {
+      <div class="absolute bottom-3 right-3
+                  flex items-center gap-1
+                  bg-black/55 backdrop-blur-sm
+                  text-white text-xs font-bold
+                  px-2 py-0.5 rounded-full">
+        <mat-icon class="!text-[10px] !w-[10px] !h-[10px] text-amber-400">star</mat-icon>
+        {{ _rating }}
+      </div>
+    }
+
+  </div>
+  <!-- /IMAGE ZONE -->
+
+  <!-- ══════════════════════════════════════════════════
+       CARD BODY
+  ══════════════════════════════════════════════════ -->
+  <div class="flex flex-col flex-1 p-4 gap-3">
+
+    <!-- Year + Location -->
+    <div class="flex items-center justify-between">
+      <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400
+                   bg-slate-100 dark:bg-slate-700
+                   px-2.5 py-0.5 rounded-full">
+        {{ _year }}
+      </span>
+      @if (_location) {
+        <span class="flex items-center gap-0.5 text-[11px] text-slate-400 dark:text-slate-500">
+          <mat-icon class="!text-xs !w-3 !h-3 text-red-400">location_on</mat-icon>
+          {{ _location }}
+        </span>
       }
     </div>
 
-    <!-- Car Name -->
-    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">
-      {{ car.brand }} {{ car.model }}
+    <!-- Car Title -->
+    <h3
+      class="text-[15px] font-bold leading-snug
+             text-slate-900 dark:text-slate-100
+             line-clamp-1
+             group-hover:text-red-600 dark:group-hover:text-red-400
+             transition-colors duration-200"
+    >
+      {{ _title }}
     </h3>
 
     <!-- Price -->
-    <p class="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-3">
-      ₹{{ formatPrice(car.price) }}
+    <p class="text-xl font-extrabold tracking-tight
+              text-red-600 dark:text-red-400
+              leading-none">
+      ₹{{ formatPrice(_price) }}
     </p>
 
-    <!-- Details Grid -->
-    <div class="grid grid-cols-2 gap-3 text-sm mb-4 flex-1">
-      <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
-        <mat-icon class="!text-lg">speed</mat-icon>
-        <span>{{ car.kmDriven.toLocaleString() }} km</span>
-      </div>
-      <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
-        <mat-icon class="!text-lg">local_gas_station</mat-icon>
-        <span>{{ car.fuelType }}</span>
-      </div>
-      <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
-        <mat-icon class="!text-lg">settings</mat-icon>
-        <span>{{ car.transmission }}</span>
-      </div>
-      <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
-        <mat-icon class="!text-lg">location_on</mat-icon>
-        <span>{{ car.location }}</span>
-      </div>
-    </div>
+    <!-- ── Spec Pills ───────────────────────────────── -->
+    <div class="flex flex-wrap gap-1.5">
 
-    <!-- Action Buttons -->
-    <div class="flex gap-2 mt-auto pt-3 border-t dark:border-gray-700">
-      <button
-        mat-raised-button
-        color="primary"
-        class="flex-1"
-        [routerLink]="['/car-details', car.id]"
+      <!-- Fuel Type — colour-coded per fuel -->
+      @switch (_fuel) {
+        @case ('Petrol') {
+          <span class="spec-pill bg-orange-50 text-orange-700 border-orange-200
+                       dark:bg-orange-900/25 dark:text-orange-300 dark:border-orange-800">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">local_gas_station</mat-icon>
+            Petrol
+          </span>
+        }
+        @case ('Diesel') {
+          <span class="spec-pill bg-sky-50 text-sky-700 border-sky-200
+                       dark:bg-sky-900/25 dark:text-sky-300 dark:border-sky-800">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">local_gas_station</mat-icon>
+            Diesel
+          </span>
+        }
+        @case ('Electric') {
+          <span class="spec-pill bg-green-50 text-green-700 border-green-200
+                       dark:bg-green-900/25 dark:text-green-300 dark:border-green-800">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">electric_bolt</mat-icon>
+            Electric
+          </span>
+        }
+        @case ('Hybrid') {
+          <span class="spec-pill bg-teal-50 text-teal-700 border-teal-200
+                       dark:bg-teal-900/25 dark:text-teal-300 dark:border-teal-800">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">energy_savings_leaf</mat-icon>
+            Hybrid
+          </span>
+        }
+        @case ('CNG') {
+          <span class="spec-pill bg-purple-50 text-purple-700 border-purple-200
+                       dark:bg-purple-900/25 dark:text-purple-300 dark:border-purple-800">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">local_gas_station</mat-icon>
+            CNG
+          </span>
+        }
+        @default {
+          <span class="spec-pill bg-slate-50 text-slate-600 border-slate-200
+                       dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">
+            <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">local_gas_station</mat-icon>
+            {{ _fuel }}
+          </span>
+        }
+      }
+
+      <!-- Transmission -->
+      <span class="spec-pill bg-violet-50 text-violet-700 border-violet-200
+                   dark:bg-violet-900/25 dark:text-violet-300 dark:border-violet-800">
+        <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">
+          {{ _transmission === 'Automatic' ? 'autorenew' : 'settings' }}
+        </mat-icon>
+        {{ _transmission }}
+      </span>
+
+      <!-- KM Driven -->
+      <span class="spec-pill bg-blue-50 text-blue-700 border-blue-200
+                   dark:bg-blue-900/25 dark:text-blue-300 dark:border-blue-800">
+        <mat-icon class="!text-[11px] !w-[11px] !h-[11px]">speed</mat-icon>
+        {{ _km.toLocaleString() }} km
+      </span>
+
+    </div>
+    <!-- /Spec Pills -->
+
+    <!-- ── Action Row ────────────────────────────────── -->
+    <div class="flex items-center gap-2 mt-auto pt-3
+                border-t border-slate-100 dark:border-slate-700">
+
+      <!-- View Details -->
+      <a
+        class="view-btn flex-1 flex items-center justify-center gap-1.5
+               bg-red-600 hover:bg-red-700 active:bg-red-800
+               text-white text-sm font-semibold
+               rounded-xl py-2.5
+               shadow-sm hover:shadow-md hover:shadow-red-200 dark:hover:shadow-red-900/40
+               transition-all duration-200 no-underline"
+        [routerLink]="['/car-details', _id]"
+        (click)="$event.stopPropagation()"
       >
         View Details
-      </button>
-      <button
-        mat-stroked-button
-        color="primary"
+        <mat-icon
+          class="!text-sm !w-4 !h-4
+                 transition-transform duration-200
+                 group-hover:translate-x-0.5"
+        >
+          arrow_forward
+        </mat-icon>
+      </a>
+
+      <!-- Compare shortcut -->
+      <a
+        class="flex-none w-10 h-10
+               flex items-center justify-center
+               rounded-xl
+               border-2 border-slate-200 dark:border-slate-600
+               text-slate-400 dark:text-slate-500
+               hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50
+               dark:hover:bg-blue-900/20 dark:hover:border-blue-500 dark:hover:text-blue-400
+               transition-all duration-200 no-underline"
         [routerLink]="['/compare']"
-        [queryParams]="{car: car.id}"
+        [queryParams]="{ car: _id }"
+        (click)="$event.stopPropagation()"
+        matTooltip="Compare this car"
       >
-        <mat-icon>compare</mat-icon>
-      </button>
+        <mat-icon class="!text-base !w-4 !h-4">compare</mat-icon>
+      </a>
+
     </div>
-  </mat-card-content>
-</mat-card>
+    <!-- /Action Row -->
+
+  </div>
+  <!-- /CARD BODY -->
+
+</div>
