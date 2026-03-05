@@ -1,53 +1,153 @@
-<!-- Hero Section -->
-<section class="bg-gradient-to-br from-primary-600 to-primary-800 text-white py-20">
-  <div class="container mx-auto px-4">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-slide-in-up">
-        Find Your Perfect Car
-      </h1>
-      <p class="text-xl md:text-2xl mb-8 text-primary-100">
-        Explore thousands of verified used cars from trusted dealers
-      </p>
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════════════════════════ -->
+<section class="hero">
 
-      <!-- Search Bar -->
-      <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Select Brand</mat-label>
-            <mat-select [(ngModel)]="searchBrand">
-              <mat-option value="">All Brands</mat-option>
-              @for (brand of popularBrands; track brand) {
-                <mat-option [value]="brand">{{ brand }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+  <!-- Background image + layered gradient overlay -->
+  <div class="hero__bg">
+    <img
+      src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=85&auto=format&fit=crop"
+      alt="Luxury car on open road"
+      class="hero__bg-img"
+    />
+    <div class="hero__overlay"></div>
+  </div>
 
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Budget</mat-label>
-            <mat-select [(ngModel)]="searchBudget">
-              <mat-option value="">Any Budget</mat-option>
-              <mat-option value="0-500000">Under ₹5 Lakh</mat-option>
-              <mat-option value="500000-1000000">₹5 - 10 Lakh</mat-option>
-              <mat-option value="1000000-2000000">₹10 - 20 Lakh</mat-option>
-              <mat-option value="2000000-5000000">₹20 - 50 Lakh</mat-option>
-              <mat-option value="5000000-99999999">Above ₹50 Lakh</mat-option>
-            </mat-select>
-          </mat-form-field>
+  <!-- Content wrapper -->
+  <div class="hero__content">
 
+    <!-- Badge -->
+    <div class="hero__badge">
+      <mat-icon>verified</mat-icon>
+      <span>India's #1 Trusted Car Marketplace</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="hero__headline">
+      Find Your
+      <span class="hero__headline-accent">Perfect Car</span>
+    </h1>
+
+    <!-- Sub-headline -->
+    <p class="hero__subheadline">
+      Explore <strong>5,000+</strong> verified listings from <strong>500+</strong> certified dealers across <strong>50+</strong> cities
+    </p>
+
+    <!-- ── Search Card ── -->
+    <div class="hero__search-card">
+
+      <!-- Tab strip: New / Used / Electric -->
+      <div class="hero__tabs">
+        @for (tab of carTypeTabs; track tab.value) {
           <button
-            mat-raised-button
-            color="primary"
-            class="!h-14 !text-lg"
-            routerLink="/buy-car"
-            [queryParams]="{brand: searchBrand, budget: searchBudget}"
+            class="hero__tab"
+            [class.hero__tab--active]="activeTab === tab.value"
+            (click)="activeTab = tab.value"
           >
-            <mat-icon>search</mat-icon>
-            Search Cars
+            <mat-icon>{{ tab.icon }}</mat-icon>
+            {{ tab.label }}
           </button>
+        }
+      </div>
+
+      <!-- Filter Row -->
+      <div class="hero__filters">
+
+        <!-- Brand -->
+        <div class="hero__filter-group">
+          <label class="hero__filter-label">
+            <mat-icon>directions_car</mat-icon>
+            Brand
+          </label>
+          <mat-select
+            [(ngModel)]="searchBrand"
+            class="hero__select"
+            placeholder="All Brands"
+          >
+            <mat-option value="">All Brands</mat-option>
+            @for (brand of popularBrands; track brand) {
+              <mat-option [value]="brand">{{ brand }}</mat-option>
+            }
+          </mat-select>
+        </div>
+
+        <div class="hero__filter-divider"></div>
+
+        <!-- Price Range -->
+        <div class="hero__filter-group">
+          <label class="hero__filter-label">
+            <mat-icon>currency_rupee</mat-icon>
+            Price Range
+          </label>
+          <mat-select
+            [(ngModel)]="searchBudget"
+            class="hero__select"
+            placeholder="Any Budget"
+          >
+            <mat-option value="">Any Budget</mat-option>
+            <mat-option value="0-500000">Under ₹5 Lakh</mat-option>
+            <mat-option value="500000-1000000">₹5 – 10 Lakh</mat-option>
+            <mat-option value="1000000-2000000">₹10 – 20 Lakh</mat-option>
+            <mat-option value="2000000-5000000">₹20 – 50 Lakh</mat-option>
+            <mat-option value="5000000-99999999">Above ₹50 Lakh</mat-option>
+          </mat-select>
+        </div>
+
+        <div class="hero__filter-divider"></div>
+
+        <!-- Fuel Type -->
+        <div class="hero__filter-group">
+          <label class="hero__filter-label">
+            <mat-icon>local_gas_station</mat-icon>
+            Fuel Type
+          </label>
+          <mat-select
+            [(ngModel)]="searchFuel"
+            class="hero__select"
+            placeholder="Any Fuel"
+          >
+            <mat-option value="">Any Fuel</mat-option>
+            @for (fuel of fuelTypes; track fuel.value) {
+              <mat-option [value]="fuel.value">{{ fuel.label }}</mat-option>
+            }
+          </mat-select>
+        </div>
+
+        <!-- Search Button -->
+        <button class="hero__search-btn" (click)="onHeroSearch()">
+          <mat-icon>search</mat-icon>
+          <span>Search Cars</span>
+        </button>
+
+      </div><!-- /hero__filters -->
+
+      <!-- Quick search pills -->
+      <div class="hero__quick-searches">
+        <span class="hero__quick-label">Popular:</span>
+        @for (tag of quickSearchTags; track tag) {
+          <button class="hero__quick-pill" (click)="quickSearch(tag)">{{ tag }}</button>
+        }
+      </div>
+
+    </div><!-- /hero__search-card -->
+
+  </div><!-- /hero__content -->
+
+  <!-- ── Floating Stats Bar ── -->
+  <div class="hero__stats">
+    @for (stat of heroStats; track stat.label) {
+      <div class="hero__stat">
+        <div class="hero__stat-icon">
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+        <div>
+          <div class="hero__stat-value">{{ stat.value }}</div>
+          <div class="hero__stat-label">{{ stat.label }}</div>
         </div>
       </div>
-    </div>
+    }
   </div>
+
 </section>
 
 <!-- Quick Stats -->
