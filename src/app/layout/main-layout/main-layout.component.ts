@@ -8,19 +8,7 @@ import { FooterComponent } from '../footer/footer.component';
   selector: 'app-main-layout',
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent],
-  template: `
-    <div class="flex flex-col min-h-screen">
-      <app-header></app-header>
-      <main class="flex-1">
-        <router-outlet></router-outlet>
-      </main>
-      <app-footer></app-footer>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  templateUrl: './main-layout.component.html',
+  styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {}

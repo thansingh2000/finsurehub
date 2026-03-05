@@ -8,36 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-compare-cars',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
-  template: `
-    <div class="bg-gray-50 dark:bg-gray-900 min-h-screen py-8">
-      <div class="container mx-auto px-4">
-        <div class="mb-8">
-          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            Compare Cars
-          </h1>
-          <p class="text-gray-600 dark:text-gray-300">
-            Select up to 3 cars to compare side by side
-          </p>
-        </div>
-
-        <mat-card class="!p-12 text-center">
-          <mat-icon class="!text-6xl !w-16 !h-16 text-gray-400 mx-auto mb-4">compare</mat-icon>
-          <h3 class="text-2xl font-bold mb-4">Car Comparison Tool</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-6">
-            This feature allows you to compare different cars based on their specifications, features, and prices.
-          </p>
-          <button mat-raised-button color="primary">
-            <mat-icon>add</mat-icon>
-            Add Cars to Compare
-          </button>
-        </mat-card>
-      </div>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  templateUrl: './compare-cars.component.html',
+  styleUrl: './compare-cars.component.scss'
 })
 export class CompareCarsComponent {}

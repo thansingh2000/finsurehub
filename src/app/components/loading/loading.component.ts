@@ -6,15 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-loading',
   standalone: true,
   imports: [CommonModule, MatProgressSpinnerModule],
-  template: `
-    <div class="flex items-center justify-center min-h-[400px]">
-      <mat-spinner [diameter]="60"></mat-spinner>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `]
+  templateUrl: './loading.component.html',
+  styleUrl: './loading.component.scss'
 })
 export class LoadingComponent {}
