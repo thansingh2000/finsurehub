@@ -1,73 +1,195 @@
-<footer class="bg-gray-900 text-gray-300 mt-auto">
-  <div class="container mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <!-- Company Info -->
-      <div>
-        <div class="flex items-center space-x-2 mb-4">
-          <mat-icon class="text-primary-400 !text-3xl">directions_car</mat-icon>
-          <span class="text-xl font-bold text-white">CarMarket</span>
+<footer class="footer">
+
+  <!-- Main Footer Content -->
+  <div class="footer-main">
+    <div class="footer-container">
+      <div class="footer-grid">
+
+        <!-- ── Column 1: Company ── -->
+        <div class="footer-col footer-col--company">
+          <!-- Logo -->
+          <a routerLink="/" class="footer-logo">
+            <div class="footer-logo__icon">
+              <mat-icon>directions_car</mat-icon>
+            </div>
+            <div class="footer-logo__text">
+              <span class="footer-logo__name">CarMarket</span>
+              <span class="footer-logo__tagline">Find Your Dream Car</span>
+            </div>
+          </a>
+
+          <p class="footer-desc">
+            India's most trusted platform for buying and selling quality cars.
+            Over 5,000+ verified listings from 500+ certified dealers across 50+ cities.
+          </p>
+
+          <!-- Contact Info -->
+          <ul class="footer-contact">
+            <li class="footer-contact__item">
+              <div class="footer-contact__icon-wrap">
+                <mat-icon>phone</mat-icon>
+              </div>
+              <div>
+                <span class="footer-contact__label">Toll Free</span>
+                <a href="tel:18001234567" class="footer-contact__value">1800-123-4567</a>
+              </div>
+            </li>
+            <li class="footer-contact__item">
+              <div class="footer-contact__icon-wrap">
+                <mat-icon>email</mat-icon>
+              </div>
+              <div>
+                <span class="footer-contact__label">Email Us</span>
+                <a href="mailto:support@carmarket.com" class="footer-contact__value">support&#64;carmarket.com</a>
+              </div>
+            </li>
+            <li class="footer-contact__item">
+              <div class="footer-contact__icon-wrap">
+                <mat-icon>location_on</mat-icon>
+              </div>
+              <div>
+                <span class="footer-contact__label">Head Office</span>
+                <span class="footer-contact__value">Bandra Kurla Complex, Mumbai 400051</span>
+              </div>
+            </li>
+          </ul>
         </div>
-        <p class="text-sm text-gray-400 mb-4">
-          Your trusted platform for buying and selling quality used cars.
-          Find your perfect car at the best price.
+
+        <!-- ── Column 2: Popular Brands ── -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading__accent"></span>
+            Popular Brands
+          </h3>
+          <ul class="footer-links">
+            @for (brand of popularBrands; track brand.name) {
+              <li>
+                <a [routerLink]="['/buy-car']" [queryParams]="{brand: brand.name}" class="footer-link footer-link--brand">
+                  <span class="footer-link__bullet"></span>
+                  {{ brand.name }}
+                  <span class="footer-link__count">{{ brand.count }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <!-- ── Column 3: Services ── -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading__accent"></span>
+            Our Services
+          </h3>
+          <ul class="footer-links">
+            @for (service of services; track service.label) {
+              <li>
+                <a [routerLink]="service.route" class="footer-link">
+                  <mat-icon class="footer-link__icon">{{ service.icon }}</mat-icon>
+                  {{ service.label }}
+                </a>
+              </li>
+            }
+          </ul>
+
+          <!-- App Download CTA -->
+          <div class="footer-app">
+            <p class="footer-app__title">Download Our App</p>
+            <div class="footer-app__badges">
+              <a href="#" class="footer-app__badge">
+                <mat-icon>phone_android</mat-icon>
+                <div>
+                  <span class="footer-app__badge-sub">Get it on</span>
+                  <span class="footer-app__badge-store">Google Play</span>
+                </div>
+              </a>
+              <a href="#" class="footer-app__badge">
+                <mat-icon>phone_iphone</mat-icon>
+                <div>
+                  <span class="footer-app__badge-sub">Download on</span>
+                  <span class="footer-app__badge-store">App Store</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Column 4: Social Media ── -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading__accent"></span>
+            Stay Connected
+          </h3>
+
+          <p class="footer-social-desc">
+            Follow us for the latest deals, new arrivals, and automotive news.
+          </p>
+
+          <!-- Social Links -->
+          <div class="footer-socials">
+            @for (social of socials; track social.label) {
+              <a [href]="social.url" target="_blank" rel="noopener" class="footer-social" [attr.aria-label]="social.label">
+                <mat-icon>{{ social.icon }}</mat-icon>
+                <span>{{ social.label }}</span>
+              </a>
+            }
+          </div>
+
+          <!-- Newsletter -->
+          <div class="footer-newsletter">
+            <p class="footer-newsletter__title">Get Deal Alerts</p>
+            <div class="footer-newsletter__form">
+              <input
+                type="email"
+                [(ngModel)]="newsletterEmail"
+                placeholder="Enter your email"
+                class="footer-newsletter__input"
+              />
+              <button (click)="subscribeNewsletter()" class="footer-newsletter__btn" type="button">
+                <mat-icon>send</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /footer-grid -->
+    </div><!-- /footer-container -->
+  </div><!-- /footer-main -->
+
+  <!-- ── Bottom Bar ── -->
+  <div class="footer-bottom">
+    <div class="footer-container">
+      <div class="footer-bottom__inner">
+
+        <!-- Copyright -->
+        <p class="footer-bottom__copy">
+          &copy; {{ currentYear }} <strong>CarMarket India Pvt. Ltd.</strong> All rights reserved.
         </p>
-        <div class="flex space-x-3">
-          <a href="#" class="hover:text-primary-400 transition-colors">
-            <mat-icon>facebook</mat-icon>
-          </a>
-          <a href="#" class="hover:text-primary-400 transition-colors">
-            <mat-icon>instagram</mat-icon>
-          </a>
-          <a href="#" class="hover:text-primary-400 transition-colors">
-            <mat-icon>twitter</mat-icon>
-          </a>
+
+        <!-- Bottom Links -->
+        <nav class="footer-bottom__nav">
+          <a href="#" class="footer-bottom__link">Privacy Policy</a>
+          <span class="footer-bottom__sep">·</span>
+          <a href="#" class="footer-bottom__link">Terms of Use</a>
+          <span class="footer-bottom__sep">·</span>
+          <a href="#" class="footer-bottom__link">Cookie Policy</a>
+          <span class="footer-bottom__sep">·</span>
+          <a href="#" class="footer-bottom__link">Sitemap</a>
+        </nav>
+
+        <!-- Trust Badges -->
+        <div class="footer-bottom__badges">
+          <div class="footer-badge">
+            <mat-icon>verified</mat-icon>
+            <span>ISO Certified</span>
+          </div>
+          <div class="footer-badge">
+            <mat-icon>security</mat-icon>
+            <span>SSL Secured</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Quick Links -->
-      <div>
-        <h3 class="text-white font-semibold mb-4">Quick Links</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a routerLink="/" class="hover:text-primary-400 transition-colors">Home</a></li>
-          <li><a routerLink="/buy-car" class="hover:text-primary-400 transition-colors">Buy Car</a></li>
-          <li><a routerLink="/compare" class="hover:text-primary-400 transition-colors">Compare Cars</a></li>
-          <li><a routerLink="/wishlist" class="hover:text-primary-400 transition-colors">Wishlist</a></li>
-        </ul>
-      </div>
-
-      <!-- Support -->
-      <div>
-        <h3 class="text-white font-semibold mb-4">Support</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-primary-400 transition-colors">Help Center</a></li>
-          <li><a href="#" class="hover:text-primary-400 transition-colors">Contact Us</a></li>
-          <li><a href="#" class="hover:text-primary-400 transition-colors">FAQs</a></li>
-          <li><a href="#" class="hover:text-primary-400 transition-colors">Terms &amp; Conditions</a></li>
-        </ul>
-      </div>
-
-      <!-- Contact -->
-      <div>
-        <h3 class="text-white font-semibold mb-4">Contact</h3>
-        <ul class="space-y-3 text-sm">
-          <li class="flex items-start space-x-2">
-            <mat-icon class="!text-lg">phone</mat-icon>
-            <span>+91 1800-XXX-XXXX</span>
-          </li>
-          <li class="flex items-start space-x-2">
-            <mat-icon class="!text-lg">email</mat-icon>
-            <span>support&#64;carmarket.com</span>
-          </li>
-          <li class="flex items-start space-x-2">
-            <mat-icon class="!text-lg">location_on</mat-icon>
-            <span>Mumbai, Maharashtra, India</span>
-          </li>
-        </ul>
       </div>
     </div>
+  </div><!-- /footer-bottom -->
 
-    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-      <p>&copy; {{ currentYear }} CarMarket. All rights reserved.</p>
-    </div>
-  </div>
 </footer>
