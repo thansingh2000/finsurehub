@@ -76,6 +76,77 @@ export class HomeComponent implements OnInit {
     { icon: 'star',           value: '4.8 / 5', label: 'Customer Rating'   },
   ];
 
+  // ── Popular Brands ────────────────────────────────────────────────────────
+  brandsList = [
+    {
+      name:        'Toyota',
+      slug:        'Toyota',
+      tagline:     "Let's Go Places",
+      cars:        '850+',
+      logoUrl:     'https://logo.clearbit.com/toyota.com',
+      accentColor: '#EB0A1E',
+      bgFrom:      '#fff5f5',
+      bgTo:        '#fee2e2',
+    },
+    {
+      name:        'BMW',
+      slug:        'BMW',
+      tagline:     'The Ultimate Driving Machine',
+      cars:        '420+',
+      logoUrl:     'https://logo.clearbit.com/bmw.com',
+      accentColor: '#0066B1',
+      bgFrom:      '#eff6ff',
+      bgTo:        '#dbeafe',
+    },
+    {
+      name:        'Audi',
+      slug:        'Audi',
+      tagline:     'Vorsprung durch Technik',
+      cars:        '380+',
+      logoUrl:     'https://logo.clearbit.com/audi.com',
+      accentColor: '#BB0A21',
+      bgFrom:      '#f9fafb',
+      bgTo:        '#f3f4f6',
+    },
+    {
+      name:        'Hyundai',
+      slug:        'Hyundai',
+      tagline:     'New Thinking. New Possibilities.',
+      cars:        '720+',
+      logoUrl:     'https://logo.clearbit.com/hyundai.com',
+      accentColor: '#002C5F',
+      bgFrom:      '#f0f9ff',
+      bgTo:        '#e0f2fe',
+    },
+    {
+      name:        'Tata',
+      slug:        'Tata',
+      tagline:     'Connecting Aspirations',
+      cars:        '650+',
+      logoUrl:     'https://logo.clearbit.com/tatamotors.com',
+      accentColor: '#00448A',
+      bgFrom:      '#eff6ff',
+      bgTo:        '#dbeafe',
+    },
+    {
+      name:        'Honda',
+      slug:        'Honda',
+      tagline:     'The Power of Dreams',
+      cars:        '540+',
+      logoUrl:     'https://logo.clearbit.com/honda.com',
+      accentColor: '#E40521',
+      bgFrom:      '#fff5f5',
+      bgTo:        '#fee2e2',
+    },
+  ];
+
+  /** Tracks brands whose logo image failed to load → show monogram fallback */
+  imageErrors = new Set<string>();
+
+  onBrandImageError(slug: string): void {
+    this.imageErrors.add(slug);
+  }
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.loadFeaturedCars();

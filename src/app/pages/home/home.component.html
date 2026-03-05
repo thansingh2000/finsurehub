@@ -248,26 +248,86 @@
   </div>
 </section>
 
-<!-- Popular Brands -->
-<section class="py-16">
-  <div class="container mx-auto px-4">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Popular Brands
-      </h2>
+<!-- ═══════════════════════════════════════════════════════════════
+     POPULAR BRANDS
+═══════════════════════════════════════════════════════════════ -->
+<section class="brands">
+  <div class="brands__container">
+
+    <!-- Section Header -->
+    <div class="brands__header">
+      <div class="brands__eyebrow">
+        <mat-icon>auto_awesome</mat-icon>
+        <span>Handpicked for You</span>
+      </div>
+      <h2 class="brands__title">Shop by Brand</h2>
+      <p class="brands__subtitle">
+        Explore top-rated makes trusted by millions of Indian car buyers
+      </p>
     </div>
 
-    <div class="flex flex-wrap justify-center gap-6">
-      @for (brand of popularBrands.slice(0, 8); track brand) {
+    <!-- Brand Grid -->
+    <div class="brands__grid">
+      @for (brand of brandsList; track brand.slug) {
         <button
-          mat-stroked-button
-          class="!px-8 !py-4 !text-lg"
-          routerLink="/buy-car"
-          [queryParams]="{brand: brand}"
+          class="brand-card"
+          [style.--accent]="brand.accentColor"
+          [style.--bg-from]="brand.bgFrom"
+          [style.--bg-to]="brand.bgTo"
+          [routerLink]="['/buy-car']"
+          [queryParams]="{ brand: brand.slug }"
+          [attr.aria-label]="'Browse ' + brand.name + ' cars'"
         >
-          {{ brand }}
+          <!-- Accent bar (top) -->
+          <span class="brand-card__bar"></span>
+
+          <!-- Logo zone -->
+          <div class="brand-card__logo-zone">
+            @if (!imageErrors.has(brand.slug)) {
+              <img
+                [src]="brand.logoUrl"
+                [alt]="brand.name + ' logo'"
+                class="brand-card__img"
+                (error)="onBrandImageError(brand.slug)"
+              />
+            } @else {
+              <!-- Fallback monogram -->
+              <span
+                class="brand-card__monogram"
+                [style.color]="brand.accentColor"
+              >
+                {{ brand.name.substring(0, 3).toUpperCase() }}
+              </span>
+            }
+          </div>
+
+          <!-- Text body -->
+          <div class="brand-card__body">
+            <h3 class="brand-card__name">{{ brand.name }}</h3>
+            <p class="brand-card__tagline">{{ brand.tagline }}</p>
+          </div>
+
+          <!-- Footer -->
+          <div class="brand-card__footer">
+            <span class="brand-card__count">
+              <mat-icon>directions_car</mat-icon>
+              {{ brand.cars }} Cars
+            </span>
+            <span class="brand-card__arrow">
+              <mat-icon>arrow_forward</mat-icon>
+            </span>
+          </div>
         </button>
       }
     </div>
+
+    <!-- View All -->
+    <div class="brands__cta">
+      <button mat-stroked-button routerLink="/buy-car" class="brands__view-all">
+        View All Brands
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
   </div>
 </section>
