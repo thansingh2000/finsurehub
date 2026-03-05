@@ -1,3 +1,265 @@
-:host {
-  display: block;
+// ─── Host ─────────────────────────────────────────────────────────────────────
+:host { display: block; }
+
+// ─── SIDEBAR ──────────────────────────────────────────────────────────────────
+// On mobile the sidebar slides in from the left; on lg+ it becomes sticky.
+// The JS-controlled classes are set via [class.translate-x-0] in the template.
+.sidebar {
+  height: 100dvh;
+
+  @media (min-width: 1024px) {
+    position: sticky;
+    height: auto;
+    max-height: calc(100vh - 148px);
+    overflow-y: auto;
+    border-radius: 1rem;
+    transform: none !important;
+  }
+
+  // Custom thin scrollbar
+  &::-webkit-scrollbar      { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+  .dark &::-webkit-scrollbar-thumb { background: #475569; }
+}
+
+// ─── FILTER SECTIONS ──────────────────────────────────────────────────────────
+.filter-section {
+  @apply border-b border-slate-100 dark:border-slate-800;
+}
+
+.filter-section__header {
+  @apply w-full flex items-center justify-between
+         px-5 py-3.5 text-left
+         hover:bg-slate-50 dark:hover:bg-slate-800/50
+         transition-colors duration-150;
+}
+
+.filter-section__title {
+  @apply flex items-center gap-2 text-sm font-bold
+         text-slate-800 dark:text-slate-200;
+
+  mat-icon {
+    @apply text-base w-4 h-4 text-red-500;
+  }
+}
+
+.filter-section__chevron {
+  @apply text-lg w-5 h-5 text-slate-400 transition-transform duration-200;
+}
+
+.filter-section__body {
+  @apply px-5 pb-4 pt-1;
+}
+
+// ─── PRICE RANGE SLIDER ───────────────────────────────────────────────────────
+.price-badge {
+  @apply text-xs font-bold text-slate-700 dark:text-slate-300
+         bg-slate-100 dark:bg-slate-800
+         px-2.5 py-1 rounded-lg;
+}
+
+.range-track-wrapper {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.range-track-bg {
+  position: absolute;
+  left: 0; right: 0;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+
+  .dark & { background: #334155; }
+}
+
+.range-track-fill {
+  position: absolute;
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+  border-radius: 2px;
+  transition: left 0.1s, width 0.1s;
+}
+
+.range-thumb {
+  position: absolute;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  pointer-events: none;
+  height: 24px;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 6px rgba(239,68,68,0.4);
+    pointer-events: all;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      transform: scale(1.2);
+      box-shadow: 0 2px 10px rgba(239,68,68,0.5);
+    }
+  }
+  &::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 6px rgba(239,68,68,0.4);
+    pointer-events: all;
+    cursor: pointer;
+  }
+}
+
+// ─── FUEL CHIPS ───────────────────────────────────────────────────────────────
+.fuel-chip {
+  @apply flex flex-col items-center gap-1
+         text-xs font-semibold
+         py-2.5 px-2 rounded-xl border
+         transition-all duration-150 cursor-pointer;
+  @apply bg-slate-50 text-slate-600 border-slate-200;
+  @apply dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700;
+
+  &:hover {
+    @apply bg-red-50 border-red-300 text-red-600;
+    @apply dark:bg-red-900/20 dark:border-red-700 dark:text-red-400;
+  }
+
+  &--active {
+    @apply bg-red-600 text-white border-red-600 shadow-sm;
+    @apply dark:bg-red-600 dark:border-red-600 dark:text-white;
+
+    mat-icon { color: #fff !important; }
+  }
+}
+
+// ─── TRANSMISSION CARDS ───────────────────────────────────────────────────────
+.trx-card {
+  @apply flex flex-col items-center justify-center gap-0.5
+         py-3 rounded-xl border
+         transition-all duration-150 cursor-pointer;
+  @apply bg-slate-50 text-slate-500 border-slate-200;
+  @apply dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700;
+
+  &:hover {
+    @apply bg-blue-50 border-blue-300 text-blue-600;
+    @apply dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400;
+  }
+
+  &--active {
+    @apply bg-blue-600 text-white border-blue-600;
+    @apply dark:bg-blue-600 dark:border-blue-600 dark:text-white;
+  }
+}
+
+// ─── BODY TYPE CARDS ──────────────────────────────────────────────────────────
+.body-card {
+  @apply flex flex-col items-center justify-center gap-0.5
+         py-2.5 rounded-xl border text-[10px] font-semibold
+         transition-all duration-150 cursor-pointer;
+  @apply bg-slate-50 text-slate-500 border-slate-200;
+  @apply dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700;
+
+  mat-icon { @apply text-slate-400 dark:text-slate-500; }
+
+  &:hover {
+    @apply bg-violet-50 border-violet-300 text-violet-700;
+    @apply dark:bg-violet-900/20 dark:border-violet-700 dark:text-violet-400;
+    mat-icon { @apply text-violet-600 dark:text-violet-400; }
+  }
+
+  &--active {
+    @apply bg-violet-600 text-white border-violet-600;
+    @apply dark:bg-violet-600 dark:border-violet-600 dark:text-white;
+    mat-icon { color: #fff !important; }
+  }
+}
+
+// ─── NATIVE SELECT (year + sort) ──────────────────────────────────────────────
+.filter-select {
+  @apply text-sm font-medium rounded-xl border
+         bg-white dark:bg-slate-800
+         text-slate-800 dark:text-slate-200
+         border-slate-200 dark:border-slate-700
+         px-3 py-2
+         focus:outline-none focus:ring-2 focus:ring-red-400
+         transition-colors duration-150;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+// ─── VIEW TOGGLE BUTTONS ──────────────────────────────────────────────────────
+.view-toggle-btn {
+  @apply w-8 h-8 flex items-center justify-center rounded-lg
+         text-slate-400 dark:text-slate-500
+         transition-all duration-150;
+
+  &:hover { @apply bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300; }
+
+  &--active {
+    @apply bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 shadow-sm;
+  }
+}
+
+// ─── CAR CARDS GRID / LIST ────────────────────────────────────────────────────
+.cars-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.25rem;
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.cars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  app-car-card {
+    // In list mode, override the card to be horizontal
+    ::ng-deep > div {
+      @apply flex-row;
+
+      // image column
+      > .relative.overflow-hidden {
+        @apply w-56 h-auto flex-shrink-0;
+      }
+    }
+  }
+}
+
+// ─── PAGINATION BUTTONS ───────────────────────────────────────────────────────
+.page-btn {
+  @apply w-9 h-9 flex items-center justify-center rounded-xl text-sm font-semibold
+         border border-slate-200 dark:border-slate-700
+         text-slate-600 dark:text-slate-300
+         bg-white dark:bg-slate-900
+         hover:bg-red-50 hover:text-red-600 hover:border-red-300
+         dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-800
+         transition-all duration-150;
+
+  &--active {
+    @apply bg-red-600 text-white border-red-600 shadow-md;
+    @apply dark:bg-red-600 dark:border-red-600 dark:text-white;
+    @apply hover:bg-red-700 hover:text-white hover:border-red-700;
+  }
+
+  &--disabled {
+    @apply opacity-40 cursor-not-allowed;
+    @apply hover:bg-white dark:hover:bg-slate-900 hover:text-slate-600 hover:border-slate-200;
+  }
 }

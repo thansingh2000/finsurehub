@@ -1,162 +1,549 @@
-<div class="bg-gray-50 dark:bg-gray-900 min-h-screen py-8">
-  <div class="container mx-auto px-4">
-    <div class="mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-        Find Your Perfect Car
-      </h1>
-      <p class="text-gray-600 dark:text-gray-300">
-        {{ filteredCars().length }} cars available
-      </p>
-    </div>
+<!-- ════════════════════════════════════════════════════════════════════════
+     CAR LISTING PAGE — CarDekho-style layout
+════════════════════════════════════════════════════════════════════════ -->
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <!-- Filters Sidebar -->
-      <aside class="lg:col-span-1">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-24">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold">Filters</h2>
-            <button mat-button color="primary" (click)="clearFilters()">
-              Clear All
+<!-- ── Mobile sidebar backdrop ──────────────────────────────────────────── -->
+@if (sidebarOpen()) {
+  <div
+    class="fixed inset-0 bg-black/50 z-30 lg:hidden"
+    (click)="sidebarOpen.set(false)"
+  ></div>
+}
+
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+
+  <!-- ── PAGE HEADER ──────────────────────────────────────────────────────── -->
+  <div class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800
+              sticky top-16 z-20">
+    <div class="container mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center
+                sm:justify-between gap-3">
+
+      <!-- Breadcrumb + title -->
+      <div>
+        <nav class="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mb-1">
+          <a routerLink="/" class="hover:text-red-500 transition-colors">Home</a>
+          <mat-icon class="!text-xs !w-3 !h-3">chevron_right</mat-icon>
+          <span class="text-slate-600 dark:text-slate-300 font-medium">Buy Cars</span>
+        </nav>
+        <h1 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          @if (loading()) {
+            Browse All Cars
+          } @else {
+            <span class="text-red-600 dark:text-red-400">{{ filteredCars().length }}</span>
+            Cars Available
+          }
+        </h1>
+      </div>
+
+      <!-- Mobile filter toggle -->
+      <button
+        class="lg:hidden inline-flex items-center gap-2
+               bg-red-600 hover:bg-red-700 text-white
+               text-sm font-semibold
+               px-4 py-2.5 rounded-xl
+               shadow-sm transition-all duration-200 w-fit"
+        (click)="sidebarOpen.set(!sidebarOpen())"
+      >
+        <mat-icon class="!text-lg !w-5 !h-5">tune</mat-icon>
+        Filters
+        @if (activeFilterCount() > 0) {
+          <span class="bg-white text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+            {{ activeFilterCount() }}
+          </span>
+        }
+      </button>
+
+    </div>
+  </div><!-- /PAGE HEADER -->
+
+  <div class="container mx-auto px-4 py-6">
+    <div class="flex gap-6 items-start">
+
+      <!-- ════════════════════════════════════════════════════════════════════
+           LEFT SIDEBAR — FILTERS
+      ════════════════════════════════════════════════════════════════════ -->
+      <aside
+        class="sidebar
+               fixed inset-y-0 left-0 z-40 w-80
+               lg:sticky lg:top-[130px] lg:w-72 lg:z-auto lg:flex-none
+               bg-white dark:bg-slate-900
+               border-r border-slate-100 dark:border-slate-800 lg:border lg:rounded-2xl
+               overflow-y-auto
+               transition-transform duration-300 ease-in-out
+               lg:translate-x-0 lg:shadow-none"
+        [class.translate-x-0]="sidebarOpen()"
+        [class.-translate-x-full]="!sidebarOpen()"
+      >
+
+        <!-- Sidebar header -->
+        <div class="flex items-center justify-between px-5 py-4
+                    border-b border-slate-100 dark:border-slate-800 sticky top-0
+                    bg-white dark:bg-slate-900 z-10">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-red-50 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+              <mat-icon class="!text-lg !w-5 !h-5 text-red-600 dark:text-red-400">tune</mat-icon>
+            </div>
+            <span class="font-bold text-slate-800 dark:text-white text-[15px]">Filters</span>
+            @if (activeFilterCount() > 0) {
+              <span class="text-xs font-bold bg-red-600 text-white rounded-full px-2 py-0.5">
+                {{ activeFilterCount() }}
+              </span>
+            }
+          </div>
+          <div class="flex items-center gap-2">
+            @if (activeFilterCount() > 0) {
+              <button
+                class="text-xs font-semibold text-red-600 dark:text-red-400
+                       hover:text-red-800 transition-colors"
+                (click)="clearAll()"
+              >
+                Clear all
+              </button>
+            }
+            <!-- Mobile close -->
+            <button
+              class="lg:hidden w-8 h-8 flex items-center justify-center
+                     rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800
+                     transition-colors"
+              (click)="sidebarOpen.set(false)"
+            >
+              <mat-icon class="!text-lg !w-5 !h-5">close</mat-icon>
             </button>
           </div>
-
-          <!-- Sort By -->
-          <mat-form-field appearance="outline" class="w-full mb-4">
-            <mat-label>Sort By</mat-label>
-            <mat-select [(ngModel)]="filters.sortBy" (ngModelChange)="applyFilters()">
-              <mat-option value="popularity">Popularity</mat-option>
-              <mat-option value="price-asc">Price: Low to High</mat-option>
-              <mat-option value="price-desc">Price: High to Low</mat-option>
-              <mat-option value="year-desc">Year: Newest First</mat-option>
-              <mat-option value="mileage-asc">Mileage: Best First</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Price Range -->
-          <mat-expansion-panel expanded class="!mb-4">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Price Range</mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="py-4">
-              <div class="mb-4">
-                <label class="text-sm text-gray-600 dark:text-gray-300">
-                  ₹{{ formatPrice(filters.priceRange.min) }} - ₹{{ formatPrice(filters.priceRange.max) }}
-                </label>
-              </div>
-              <div class="grid grid-cols-2 gap-2">
-                <input
-                  type="number"
-                  [(ngModel)]="filters.priceRange.min"
-                  (ngModelChange)="applyFilters()"
-                  placeholder="Min"
-                  class="px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                />
-                <input
-                  type="number"
-                  [(ngModel)]="filters.priceRange.max"
-                  (ngModelChange)="applyFilters()"
-                  placeholder="Max"
-                  class="px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-                />
-              </div>
-            </div>
-          </mat-expansion-panel>
-
-          <!-- Fuel Type -->
-          <mat-expansion-panel expanded class="!mb-4">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Fuel Type</mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="py-4 space-y-2">
-              @for (type of fuelTypes; track type) {
-                <mat-checkbox
-                  [checked]="filters.fuelType.includes(type)"
-                  (change)="toggleFilter('fuelType', type)"
-                  class="block"
-                >
-                  {{ type }}
-                </mat-checkbox>
-              }
-            </div>
-          </mat-expansion-panel>
-
-          <!-- Transmission -->
-          <mat-expansion-panel expanded class="!mb-4">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Transmission</mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="py-4 space-y-2">
-              @for (type of transmissionTypes; track type) {
-                <mat-checkbox
-                  [checked]="filters.transmission.includes(type)"
-                  (change)="toggleFilter('transmission', type)"
-                  class="block"
-                >
-                  {{ type }}
-                </mat-checkbox>
-              }
-            </div>
-          </mat-expansion-panel>
-
-          <!-- Body Type -->
-          <mat-expansion-panel expanded class="!mb-4">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Body Type</mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="py-4 space-y-2">
-              @for (type of bodyTypes; track type) {
-                <mat-checkbox
-                  [checked]="filters.bodyType.includes(type)"
-                  (change)="toggleFilter('bodyType', type)"
-                  class="block"
-                >
-                  {{ type }}
-                </mat-checkbox>
-              }
-            </div>
-          </mat-expansion-panel>
         </div>
-      </aside>
 
-      <!-- Car Listings -->
-      <div class="lg:col-span-3">
-        <!-- Active Filters -->
-        @if (hasActiveFilters()) {
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
-            <div class="flex flex-wrap gap-2">
-              @for (filter of getActiveFilters(); track filter) {
-                <mat-chip (removed)="removeFilter(filter)">
-                  {{ filter }}
-                  <button matChipRemove>
-                    <mat-icon>cancel</mat-icon>
-                  </button>
-                </mat-chip>
+        <!-- ─── Price Range ──────────────────────────────────────────────── -->
+        <div class="filter-section">
+          <button class="filter-section__header" (click)="toggleSection('price')">
+            <span class="filter-section__title">
+              <mat-icon>currency_rupee</mat-icon>Price Range
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('price')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('price')) {
+            <div class="filter-section__body">
+
+              <!-- Price display -->
+              <div class="flex items-center justify-between mb-3">
+                <span class="price-badge">₹{{ fmt(filterPriceMin()) }}</span>
+                <span class="text-slate-300 dark:text-slate-600 text-sm">—</span>
+                <span class="price-badge">₹{{ fmt(filterPriceMax()) }}</span>
+              </div>
+
+              <!-- Range track -->
+              <div class="range-track-wrapper">
+                <div class="range-track-bg"></div>
+                <div
+                  class="range-track-fill"
+                  [style.left.%]="priceMinPct()"
+                  [style.width.%]="priceMaxPct() - priceMinPct()"
+                ></div>
+                <input type="range" class="range-thumb"
+                  [min]="PRICE_MIN" [max]="PRICE_MAX" [step]="50000"
+                  [value]="filterPriceMin()"
+                  (input)="onPriceMinChange($event)"
+                />
+                <input type="range" class="range-thumb"
+                  [min]="PRICE_MIN" [max]="PRICE_MAX" [step]="50000"
+                  [value]="filterPriceMax()"
+                  (input)="onPriceMaxChange($event)"
+                />
+              </div>
+
+              <!-- Quick price chips -->
+              <div class="flex flex-wrap gap-2 mt-4">
+                @for (range of [
+                  {label:'Under ₹5L',  min:0,       max:500000},
+                  {label:'₹5–10L',     min:500000,  max:1000000},
+                  {label:'₹10–20L',    min:1000000, max:2000000},
+                  {label:'₹20–50L',    min:2000000, max:5000000},
+                  {label:'₹50L+',      min:5000000, max:10000000}
+                ]; track range.label) {
+                  <button
+                    class="text-[11px] font-semibold px-2.5 py-1 rounded-lg border
+                           transition-all duration-150"
+                    [class.bg-red-600]="filterPriceMin() === range.min && filterPriceMax() === range.max"
+                    [class.text-white]="filterPriceMin() === range.min && filterPriceMax() === range.max"
+                    [class.border-red-600]="filterPriceMin() === range.min && filterPriceMax() === range.max"
+                    [class.bg-white]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    [class.dark:bg-slate-800]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    [class.text-slate-600]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    [class.dark:text-slate-300]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    [class.border-slate-200]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    [class.dark:border-slate-700]="!(filterPriceMin() === range.min && filterPriceMax() === range.max)"
+                    (click)="filterPriceMin.set(range.min); filterPriceMax.set(range.max); currentPage.set(1)"
+                  >{{ range.label }}</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- ─── Brand ───────────────────────────────────────────────────── -->
+        <div class="filter-section">
+          <button class="filter-section__header" (click)="toggleSection('brand')">
+            <span class="filter-section__title">
+              <mat-icon>stars</mat-icon>Brand
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('brand')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('brand')) {
+            <div class="filter-section__body space-y-1 max-h-64 overflow-y-auto pr-1">
+              @for (b of brandList(); track b.name) {
+                <label
+                  class="flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer
+                         hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  (click)="toggleBrand(b.name)"
+                >
+                  <span
+                    class="w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center
+                           transition-all duration-150"
+                    [class.bg-red-600]="filterBrands().includes(b.name)"
+                    [class.border-red-600]="filterBrands().includes(b.name)"
+                    [class.border-slate-300]="!filterBrands().includes(b.name)"
+                    [class.dark:border-slate-600]="!filterBrands().includes(b.name)"
+                  >
+                    @if (filterBrands().includes(b.name)) {
+                      <mat-icon class="!text-[10px] !w-[10px] !h-[10px] text-white">check</mat-icon>
+                    }
+                  </span>
+                  <span class="text-sm text-slate-700 dark:text-slate-300 flex-1">{{ b.name }}</span>
+                  <span class="text-[11px] font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500
+                               px-1.5 py-0.5 rounded-full">{{ b.count }}</span>
+                </label>
               }
             </div>
+          }
+        </div>
+
+        <!-- ─── Fuel Type ───────────────────────────────────────────────── -->
+        <div class="filter-section">
+          <button class="filter-section__header" (click)="toggleSection('fuel')">
+            <span class="filter-section__title">
+              <mat-icon>local_gas_station</mat-icon>Fuel Type
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('fuel')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('fuel')) {
+            <div class="filter-section__body grid grid-cols-2 gap-2">
+              @for (f of FUEL_TYPES; track f) {
+                <button
+                  class="fuel-chip"
+                  [class.fuel-chip--active]="filterFuels().includes(f)"
+                  [attr.data-fuel]="f"
+                  (click)="toggleFuel(f)"
+                >
+                  @switch (f) {
+                    @case ('Petrol')   { <mat-icon class="!text-sm !w-4 !h-4">local_gas_station</mat-icon> }
+                    @case ('Diesel')   { <mat-icon class="!text-sm !w-4 !h-4">opacity</mat-icon> }
+                    @case ('Electric') { <mat-icon class="!text-sm !w-4 !h-4">electric_bolt</mat-icon> }
+                    @case ('Hybrid')   { <mat-icon class="!text-sm !w-4 !h-4">energy_savings_leaf</mat-icon> }
+                    @case ('CNG')      { <mat-icon class="!text-sm !w-4 !h-4">compress</mat-icon> }
+                  }
+                  {{ f }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- ─── Transmission ───────────────────────────────────────────── -->
+        <div class="filter-section">
+          <button class="filter-section__header" (click)="toggleSection('transmission')">
+            <span class="filter-section__title">
+              <mat-icon>settings</mat-icon>Transmission
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('transmission')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('transmission')) {
+            <div class="filter-section__body grid grid-cols-2 gap-3">
+              @for (t of TRX_TYPES; track t) {
+                <button
+                  class="trx-card"
+                  [class.trx-card--active]="filterTrx().includes(t)"
+                  (click)="toggleTrx(t)"
+                >
+                  <mat-icon class="!text-2xl !w-7 !h-7 mb-1">
+                    {{ t === 'Automatic' ? 'autorenew' : 'settings' }}
+                  </mat-icon>
+                  <span class="text-xs font-semibold">{{ t }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- ─── Year Range ──────────────────────────────────────────────── -->
+        <div class="filter-section">
+          <button class="filter-section__header" (click)="toggleSection('year')">
+            <span class="filter-section__title">
+              <mat-icon>calendar_today</mat-icon>Year
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('year')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('year')) {
+            <div class="filter-section__body flex items-center gap-3">
+              <select
+                class="filter-select flex-1"
+                [ngModel]="filterYearMin()"
+                (ngModelChange)="filterYearMin.set($event); currentPage.set(1)"
+              >
+                @for (y of yearOptions; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+              <span class="text-slate-400 text-sm font-medium flex-shrink-0">to</span>
+              <select
+                class="filter-select flex-1"
+                [ngModel]="filterYearMax()"
+                (ngModelChange)="filterYearMax.set($event); currentPage.set(1)"
+              >
+                @for (y of yearOptions; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+            </div>
+          }
+        </div>
+
+        <!-- ─── Body Type ───────────────────────────────────────────────── -->
+        <div class="filter-section border-b-0">
+          <button class="filter-section__header" (click)="toggleSection('body')">
+            <span class="filter-section__title">
+              <mat-icon>directions_car</mat-icon>Body Type
+            </span>
+            <mat-icon class="filter-section__chevron" [class.rotate-180]="isOpen('body')">
+              expand_more
+            </mat-icon>
+          </button>
+
+          @if (isOpen('body')) {
+            <div class="filter-section__body grid grid-cols-3 gap-2">
+              @for (b of BODY_TYPES; track b.value) {
+                <button
+                  class="body-card"
+                  [class.body-card--active]="filterBodyTypes().includes(b.value)"
+                  (click)="toggleBody(b.value)"
+                >
+                  <mat-icon class="!text-xl !w-6 !h-6 mb-1">{{ b.icon }}</mat-icon>
+                  <span class="text-[10px] font-semibold leading-tight">{{ b.value }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+      </aside>
+      <!-- /SIDEBAR -->
+
+      <!-- ════════════════════════════════════════════════════════════════════
+           MAIN CONTENT AREA
+      ════════════════════════════════════════════════════════════════════ -->
+      <div class="flex-1 min-w-0">
+
+        <!-- ─── Results Toolbar ──────────────────────────────────────────── -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100
+                    dark:border-slate-800 px-4 py-3 mb-5
+                    flex flex-col sm:flex-row sm:items-center gap-3">
+
+          <!-- Left: count + chips -->
+          <div class="flex-1 flex flex-wrap items-center gap-2">
+            @if (!loading()) {
+              <span class="text-sm font-semibold text-slate-600 dark:text-slate-300 flex-shrink-0">
+                <span class="text-red-600 dark:text-red-400 font-extrabold">{{ filteredCars().length }}</span> cars
+              </span>
+            }
+
+            <!-- Active filter chips -->
+            @for (chip of activeChips(); track chip.label) {
+              <span
+                class="inline-flex items-center gap-1
+                       text-xs font-semibold
+                       bg-red-50 dark:bg-red-900/20
+                       text-red-700 dark:text-red-400
+                       border border-red-200 dark:border-red-800
+                       px-2.5 py-1 rounded-full
+                       transition-all duration-150"
+              >
+                {{ chip.label }}
+                <button
+                  class="w-3.5 h-3.5 rounded-full hover:bg-red-200 dark:hover:bg-red-800
+                         flex items-center justify-center transition-colors"
+                  (click)="removeChip(chip)"
+                >
+                  <mat-icon class="!text-[10px] !w-[10px] !h-[10px]">close</mat-icon>
+                </button>
+              </span>
+            }
+
+            @if (activeFilterCount() > 1) {
+              <button
+                class="text-xs font-semibold text-slate-400 hover:text-red-600
+                       transition-colors underline"
+                (click)="clearAll()"
+              >
+                Clear all
+              </button>
+            }
+          </div>
+
+          <!-- Right: view toggle + sort -->
+          <div class="flex items-center gap-3 flex-shrink-0">
+
+            <!-- Grid / List toggle -->
+            <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 gap-1">
+              <button
+                class="view-toggle-btn"
+                [class.view-toggle-btn--active]="viewMode() === 'grid'"
+                (click)="viewMode.set('grid')"
+                matTooltip="Grid view"
+              >
+                <mat-icon class="!text-base !w-4 !h-4">grid_view</mat-icon>
+              </button>
+              <button
+                class="view-toggle-btn"
+                [class.view-toggle-btn--active]="viewMode() === 'list'"
+                (click)="viewMode.set('list')"
+                matTooltip="List view"
+              >
+                <mat-icon class="!text-base !w-4 !h-4">view_list</mat-icon>
+              </button>
+            </div>
+
+            <!-- Sort dropdown -->
+            <select
+              class="filter-select text-sm px-3 py-2 min-w-[170px]"
+              [ngModel]="sortBy()"
+              (ngModelChange)="onSortChange($event)"
+            >
+              @for (opt of SORT_OPTIONS; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+
+          </div>
+        </div><!-- /Toolbar -->
+
+        <!-- ─── Loading ──────────────────────────────────────────────────── -->
+        @if (loading()) {
+          <app-loading></app-loading>
+        }
+
+        <!-- ─── Empty State ──────────────────────────────────────────────── -->
+        @else if (filteredCars().length === 0) {
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100
+                      dark:border-slate-800 p-16 flex flex-col items-center text-center">
+            <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+              <mat-icon class="!text-4xl !w-10 !h-10 text-slate-400">search_off</mat-icon>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+              No cars found
+            </h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6 max-w-sm">
+              Try adjusting your filters — we have plenty of cars waiting for you!
+            </p>
+            <button
+              class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700
+                     text-white font-semibold px-6 py-2.5 rounded-xl
+                     transition-all duration-200 shadow-sm hover:shadow-md"
+              (click)="clearAll()"
+            >
+              <mat-icon class="!text-lg !w-5 !h-5">refresh</mat-icon>
+              Clear All Filters
+            </button>
           </div>
         }
 
-        @if (loading()) {
-          <app-loading></app-loading>
-        } @else if (filteredCars().length === 0) {
-          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
-            <mat-icon class="!text-6xl !w-16 !h-16 text-gray-400 mx-auto mb-4">search_off</mat-icon>
-            <h3 class="text-2xl font-bold mb-2">No cars found</h3>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">
-              Try adjusting your filters to see more results
-            </p>
-            <button mat-raised-button color="primary" (click)="clearFilters()">
-              Clear Filters
-            </button>
-          </div>
-        } @else {
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            @for (car of filteredCars(); track car.id) {
+        <!-- ─── Car Grid ─────────────────────────────────────────────────── -->
+        @else {
+          <div
+            [class.cars-grid]="viewMode() === 'grid'"
+            [class.cars-list]="viewMode() === 'list'"
+          >
+            @for (car of paginatedCars(); track car.id) {
               <app-car-card [car]="car"></app-car-card>
             }
           </div>
+
+          <!-- ─── Pagination ───────────────────────────────────────────── -->
+          @if (totalPages() > 1) {
+            <div class="flex flex-col sm:flex-row items-center justify-between
+                        bg-white dark:bg-slate-900
+                        rounded-2xl border border-slate-100 dark:border-slate-800
+                        px-5 py-4 mt-6 gap-4">
+
+              <!-- Page info -->
+              <span class="text-sm text-slate-500 dark:text-slate-400">
+                Showing
+                <strong class="text-slate-900 dark:text-white">
+                  {{ (currentPage() - 1) * PAGE_SIZE + 1 }}–{{ minVal(currentPage() * PAGE_SIZE, filteredCars().length) }}
+                </strong>
+                of
+                <strong class="text-slate-900 dark:text-white">{{ filteredCars().length }}</strong>
+                cars
+              </span>
+
+              <!-- Page buttons -->
+              <nav class="flex items-center gap-1.5">
+
+                <!-- Prev -->
+                <button
+                  class="page-btn"
+                  [class.page-btn--disabled]="currentPage() === 1"
+                  [disabled]="currentPage() === 1"
+                  (click)="prevPage()"
+                >
+                  <mat-icon class="!text-base !w-4 !h-4">chevron_left</mat-icon>
+                </button>
+
+                <!-- Page numbers -->
+                @for (p of pageNumbers(); track $index) {
+                  @if (p === '...') {
+                    <span class="w-9 h-9 flex items-center justify-center
+                                 text-slate-400 text-sm select-none">…</span>
+                  } @else {
+                    <button
+                      class="page-btn"
+                      [class.page-btn--active]="currentPage() === p"
+                      (click)="goToPage(p)"
+                    >
+                      {{ p }}
+                    </button>
+                  }
+                }
+
+                <!-- Next -->
+                <button
+                  class="page-btn"
+                  [class.page-btn--disabled]="currentPage() === totalPages()"
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="nextPage()"
+                >
+                  <mat-icon class="!text-base !w-4 !h-4">chevron_right</mat-icon>
+                </button>
+
+              </nav>
+            </div>
+          }<!-- /Pagination -->
         }
-      </div>
-    </div>
-  </div>
-</div>
+
+      </div><!-- /MAIN CONTENT -->
+
+    </div><!-- /flex layout -->
+  </div><!-- /container -->
+</div><!-- /page -->

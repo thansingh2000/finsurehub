@@ -106,6 +106,10 @@ export class CarService {
     return of(results).pipe(delay(200));
   }
 
+  getCarCountByBrand(brand: string): number {
+    return this.cars().filter(c => c.brand === brand).length;
+  }
+
   getPopularBrands(): string[] {
     const brandCount = new Map<string, number>();
     this.cars().forEach(car => {
